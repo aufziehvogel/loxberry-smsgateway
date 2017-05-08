@@ -4,6 +4,8 @@ import threading
 import time
 import uuid
 import codecs
+import os.path
+import re
 
 app = flask.Flask(__name__)
 
@@ -17,6 +19,22 @@ def send_sms():
 		f.write('To: %s\n' % number)
 		f.write('\n')
 		f.write(message)
+
+@app.route('/voice_call')
+def voice_call():
+	# Make sure that users only input numbers or + as input, but
+	# allow leading zeroes
+	number = re.sub('[^+\d]', '', flask.request.args.get('number'))
+	duration = int(flask.request.args.get('duration'))
+
+	subprocess.call(['/etc/init.d/smstools', 'stop'])
+	
+	curdir = os.path.dirname(os.path.realpath(__file__))
+	bash_script = os.path.join(curdir, 'voice_call.sh')
+	#print('bash %s %s %d' % (bash_script, number, duration))
+	subprocess.call('bash %s %s %d' % (bash_script, number, duration), shell=True)
+	
+	subprocess.call(['/etc/init.d/smstools', 'start'])
 
 @app.route('/number/<int:number>')
 def permit_sms_number(number):
