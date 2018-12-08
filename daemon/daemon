@@ -18,15 +18,4 @@ then
     /usr/bin/logger -s "loxberry-plugin-$pluginname - DAEMON Script from SMS Gateway Plugin"
 fi
 
-cp /opt/loxberry/data/plugins/$pluginname/supervisor.conf /etc/supervisor/conf.d/smsgateway.conf
-cp /opt/loxberry/data/plugins/$pluginname/supervisorsend.conf /etc/supervisor/conf.d/smsgatewaysend.conf
-cp /opt/loxberry/data/plugins/$pluginname/smsd.conf /etc/smsd.conf
-
-# Normally we would "enable" once, but there seems to be no script with root permissions in loxberry structure
-# apart from daemon startup
-service supervisor start
-/etc/init.d/smstools start
-
-# supervisorctl start smsgateway
-
 exit 0
